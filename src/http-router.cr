@@ -7,7 +7,7 @@ class HTTP::Server::Context
   # Respond 200 with a JSON body
   def ok_json(full_object)
     self.response.content_type = "application/json"
-    self.response.status = HTTP::Status::SUCCESS
+    self.response.status = HTTP::Status::OK
     full_object.to_json(self.response)
   end
 
@@ -64,7 +64,7 @@ module HTTP::Router
         {% used = {} of String => Nil %}
         case { %req.method, %req.path }
           {% for method in @type.methods %}
-            {% if ann = method.annotation ::HTTP::Route %}
+            {% for ann in method.annotations ::HTTP::Route %}
               {% if ex = used[ann[:method] + ann[:path]]
                    raise "Duplicate @[HTTP::Route] #{ann[:method].id} #{ann[:path]}: #{ex.name}, #{method.name}"
                  end %}
@@ -76,7 +76,6 @@ module HTTP::Router
         else
           call_next context
         end
-        {% debug %}
       {% end %}
     end
   end

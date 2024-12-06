@@ -23,6 +23,7 @@ class MyHander
   include HTTP::Router
 
   @[HTTP::Route(path: "/stuff")]
+  @[HTTP::Route(path: "/stuff", method: :HEAD)]
   def get_stuff(context)
     context.ok_json(result: "success!")
   end
@@ -38,13 +39,13 @@ end
 
 This will generate a `call(context)` method like this:
 
-this
-
 ```crystal
 def call(context : HTTP::Server::Context)
   req = context.request
   case { req.method, req.path }
   when { "GET", "/stuff" }
+    self.get_stuff(context)
+  when { "HEAD", "/stuff" }
     self.get_stuff(context)
   when { "POST", "/stuff" }
     self.post_stuff(context)
