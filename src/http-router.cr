@@ -65,11 +65,15 @@ module HTTP::Router
         case { %req.method, %req.path }
           {% for method in @type.methods %}
             {% for ann in method.annotations ::HTTP::Route %}
-              {% if ex = used[ann[:method] + ann[:path]]
-                   raise "Duplicate @[HTTP::Route] #{ann[:method].id} #{ann[:path]}: #{ex.name}, #{method.name}"
+              {%
+                http_method = ann[:method] || :GET
+                path = ann[:path] || raise "Missing path on @[HTTP::Route]"
+              %}
+              {% if ex = used[http_method + path]
+                   raise "Duplicate @[HTTP::Route] #{http_method.id} #{path}: #{ex.name}, #{method.name}"
                  end %}
-              {% used[ann[:method] + ann[:path]] = method %}
-              when { {{ ann[:method].id.stringify }}, {{ ann[:path] }} }
+              {% used[http_method + path] = method %}
+              when { {{ http_method.id.stringify }}, {{ path }} }
                 self.{{ method.name }}(context)
             {% end %}
           {% end %}
