@@ -20,6 +20,7 @@ require "http-router"
 
 class MyHander
   include HTTP::Handler
+  include HTTP::Router
 
   @[HTTP::Route(path: "/stuff")]
   def get_stuff(context)
